@@ -32,7 +32,7 @@ export async function listProjects() {
   return out.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
-export async function createProject({ title, type, topic, details, links }) {
+export async function createProject({ title, type, topic, details, links, product }) {
   const id = `${Date.now().toString(36)}-${crypto.randomBytes(3).toString('hex')}`;
   const dir = projectDir(id);
   for (const sub of ['assets', 'scenes', 'audio', 'output']) {
@@ -40,18 +40,32 @@ export async function createProject({ title, type, topic, details, links }) {
   }
   const project = {
     id,
-    title: title || topic || 'โปรเจกต์ใหม่',
+    title: title || topic || product?.name || 'โปรเจกต์ใหม่',
     type: CLIP_TYPES.includes(type) ? type : 'story',
-    input: { topic: topic || '', details: details || '', links: links || [], images: [] },
+    input: { topic: topic || product?.name || '', details: details || '', links: links || [], images: [] },
+    product: normalizeProduct(product),
     script: null, // { hook, body, ending, caption, hashtags }
     characters: [],
     scenes: [],
-    settings: { transition: 'fade', transitionSec: 0.4, burnSubtitles: true, titleOverlay: true },
+    settings: { transition: 'fade', transitionSec: 0.4, burnSubtitles: true, titleOverlay: true, priceOverlay: true },
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
   await saveProject(project);
   return project;
+}
+
+// ข้อมูลสินค้าสำหรับคลิปขายของ: ราคา/โปรใส่เป็นข้อความทับคลิป ไม่ให้ Meta วาด (Meta มักเขียนตัวเลข/ภาษาไทยผิด)
+export function normalizeProduct(p = {}) {
+  const list = (v) => (Array.isArray(v) ? v : String(v || '').split('\n')).map((x) => String(x).trim()).filter(Boolean).slice(0, 3);
+  return {
+    name: String(p?.name || '').trim(),
+    price: String(p?.price || '').trim(),
+    pain: String(p?.pain || '').trim(),
+    benefits: list(p?.benefits),
+    promo: String(p?.promo || '').trim(),
+    cta: String(p?.cta || '').trim() || 'กดตะกร้าเลย',
+  };
 }
 
 export async function getProject(id) {

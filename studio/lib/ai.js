@@ -35,7 +35,7 @@ export async function generateStoryboard(project, { sceneCount = 6 } = {}) {
   const images = await loadImages(project);
   const draft = process.env.ANTHROPIC_API_KEY
     ? await callClaude(project, linkText, images, sceneCount)
-    : offlineDraft(project, sceneCount);
+    : project.type === 'product' && project.product?.name ? productDraft(project) : offlineDraft(project, sceneCount);
   return normalize(draft, project);
 }
 
@@ -45,6 +45,14 @@ async function callClaude(project, linkText, images, sceneCount) {
     `ประเภทคลิป: ${TYPE_GUIDE[project.type]}`,
     `หัวข้อ: ${topic}`,
     details && `รายละเอียด: ${details}`,
+    project.type === 'product' && project.product?.name && [
+      `สินค้า: ${project.product.name}`,
+      project.product.pain && `ปัญหาที่ลูกค้าเจอ: ${project.product.pain}`,
+      project.product.benefits.length && `จุดเด่น: ${project.product.benefits.join(' / ')}`,
+      project.product.price && `ราคา: ${project.product.price} (ห้ามใส่ราคาใน prompt โปรแกรมจะใส่ข้อความทับเอง)`,
+      project.product.promo && `โปรโมชัน: ${project.product.promo}`,
+      'ฉากที่ต้องเห็นตัวสินค้าให้ useRefImage=true และขึ้นต้น prompt ด้วย "จากรูปนี้" เพื่อให้สินค้าหน้าตาตรงของจริง',
+    ].filter(Boolean).join('\n'),
     linkText && `ข้อมูลจากลิงก์:\n${linkText}`,
     images.length && `มีรูปอ้างอิง ${images.length} รูป (แนบมา) ใช้เป็นภาพสินค้า/ตัวละครหลัก ตั้ง useRefImage=true ในฉากที่ต้องเห็นสิ่งนี้`,
     `แบ่งเป็น ${sceneCount} ฉาก ความยาวรวม 25-50 วินาที สำหรับ TikTok/Reels แนวตั้ง`,
@@ -75,6 +83,27 @@ async function callClaude(project, linkText, images, sceneCount) {
   const out = body.content.filter((c) => c.type === 'text').map((c) => c.text).join('');
   const json = out.slice(out.indexOf('{'), out.lastIndexOf('}') + 1);
   return JSON.parse(json);
+}
+
+// สูตรคลิปขายของ: Hook ปัญหา → เปิดตัวสินค้า(รูปจริง) → จุดเด่น(รูปจริง) → ผลลัพธ์ → ปิดการขาย(รูปจริง)
+function productDraft(project) {
+  const { name, price, pain, benefits, promo, cta } = project.product;
+  const hasImg = project.input.images.length > 0;
+  const fromImg = hasImg ? 'จากรูปนี้ ' : '';
+  const scenes = [];
+  const add = (dialogue, prompt, useRefImage, visual) => scenes.push({ duration: 5, visual, characterIds: [], dialogue, subtitle: dialogue, prompt, useRefImage: useRefImage && hasImg });
+  if (pain) add(`${pain} ใช่ไหม?`, `คนไทยสีหน้ากังวลใจเพราะ${pain} มองกล้อง`, false, 'Hook: ปัญหาของลูกค้า');
+  add(`ลองนี่เลย ${name}`, `${fromImg}${name} วางบนโต๊ะ กล้องค่อยๆ ซูมเข้า แสงสวยแบบโฆษณา`, true, 'เปิดตัวสินค้า');
+  for (const b of benefits) add(b, `${fromImg}มือหยิบ${name}ขึ้นมาโชว์ใกล้กล้อง ${b}`, true, `จุดเด่น: ${b}`);
+  add(`ใช้แล้วชอบมาก`, `คนไทยยิ้มอย่างมีความสุขหลังใช้${name}`, false, 'ผลลัพธ์');
+  const close = [promo, price && `เพียง ${price}`, cta].filter(Boolean).join(' ');
+  add(close, `${fromImg}${name} หมุนโชว์ช้าๆ บนพื้นหลังสวยสะอาด`, true, 'ปิดการขาย (ราคา/โปรใส่เป็นข้อความทับ)');
+  return {
+    title: name,
+    script: { hook: pain ? `${pain}?` : name, body: benefits.join(' / '), ending: close, caption: [name, benefits[0], close].filter(Boolean).join(' | '), hashtags: ['#รีวิว', '#ของดีบอกต่อ', '#tiktokshop'] },
+    characters: [],
+    scenes,
+  };
 }
 
 function offlineDraft(project, n) {

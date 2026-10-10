@@ -5,7 +5,7 @@ import { createReadStream } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
-  listProjects, createProject, getProject, updateProject, saveFile, projectDir, httpError, safeName, DATA_DIR,
+  listProjects, createProject, getProject, updateProject, saveFile, projectDir, httpError, safeName, DATA_DIR, normalizeProduct,
 } from './lib/store.js';
 import { generateStoryboard } from './lib/ai.js';
 import { loadQueueState, getState, enqueue, dequeue, nextJob, report, setPaused } from './lib/queue.js';
@@ -78,6 +78,7 @@ route('PUT', '/api/projects/([\\w-]+)', async (req, [id]) => {
   const body = await readJson(req);
   return updateProject(id, (p) => {
     for (const k of ['title', 'type', 'script', 'characters', 'settings']) if (k in body) p[k] = body[k];
+    if (body.product) p.product = normalizeProduct(body.product);
     if (body.input) Object.assign(p.input, { topic: body.input.topic ?? p.input.topic, details: body.input.details ?? p.input.details, links: body.input.links ?? p.input.links });
     if (Array.isArray(body.scenes)) {
       const old = new Map(p.scenes.map((s) => [s.id, s]));

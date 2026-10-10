@@ -134,6 +134,8 @@ WrapStyle: 0
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
 Style: Sub,${FONT},64,&H00FFFFFF,&H00FFFFFF,&H00000000,&H80000000,1,0,0,0,100,100,0,0,1,5,2,2,70,70,330,1
+Style: Price,${FONT},110,&H0000E5FF,&H00FFFFFF,&H00000000,&HC0000000,1,0,0,0,100,100,0,0,3,8,0,5,60,60,0,1
+Style: Cta,${FONT},70,&H00FFFFFF,&H00FFFFFF,&H00000000,&HE02B2BFF,1,0,0,0,100,100,0,0,3,14,0,2,60,60,560,1
 Style: Title,${FONT},80,&H0000E5FF,&H00FFFFFF,&H00000000,&H80000000,1,0,0,0,100,100,0,0,1,6,3,8,60,60,220,1
 
 [Events]
@@ -153,6 +155,15 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
   const hook = project.script?.hook;
   if (project.settings?.titleOverlay !== false && hook) {
     lines.push(`Dialogue: 1,${assTime(0)},${assTime(Math.min(2.5, parts[0].duration))},Title,,0,0,0,,{\\fad(150,250)}${assText(hook)}`);
+  }
+  // ป้ายราคา + ปุ่มชวนซื้อ บนฉากสุดท้ายของคลิปขายของ
+  const pr = project.product;
+  if (project.type === 'product' && project.settings?.priceOverlay !== false && pr && (pr.price || pr.cta)) {
+    const last = parts[parts.length - 1];
+    const end = t + T, start = Math.max(0, end - last.duration);
+    const big = [pr.promo, pr.price].filter(Boolean).join('\\N');
+    if (big) lines.push(`Dialogue: 2,${assTime(start + 0.3)},${assTime(end)},Price,,0,0,0,,{\\fad(200,0)}${assText(big).replace(/\\\\N/g, '\\N')}`);
+    if (pr.cta) lines.push(`Dialogue: 2,${assTime(start + 0.8)},${assTime(end)},Cta,,0,0,0,,{\\fad(200,0)}${assText(pr.cta)}`);
   }
   return head + lines.join('\n') + '\n';
 }

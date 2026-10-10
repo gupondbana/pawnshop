@@ -25,7 +25,16 @@
             <option value="follower">เพิ่มผู้ติดตาม</option>
           </select>
         </label>
-        <label>หัวข้อ <input name="topic" required></label>
+        <fieldset id="productFields">
+          <label>ชื่อสินค้า <input name="p_name" placeholder="เช่น ครีมกันแดดหน้าใส"></label>
+          <label>ราคา <input name="p_price" placeholder="เช่น 199 บาท"></label>
+          <label>ปัญหาที่ลูกค้าเจอ <input name="p_pain" placeholder="เช่น หน้ามันทั้งวัน"></label>
+          <label>จุดเด่น (บรรทัดละข้อ สูงสุด 3) <textarea name="p_benefits" rows="3"></textarea></label>
+          <label>โปรโมชัน <input name="p_promo" placeholder="เช่น ซื้อ 1 แถม 1"></label>
+          <label>ข้อความชวนซื้อ <input name="p_cta" placeholder="กดตะกร้าเลย"></label>
+          <small class="muted">ใส่รูปสินค้าจริงด้านล่างด้วย เพื่อให้สินค้าในคลิปหน้าตาตรงของจริง</small>
+        </fieldset>
+        <label>หัวข้อ <input name="topic"></label>
         <label>รายละเอียด <textarea name="details" rows="3"></textarea></label>
         <label>ลิงก์ (บรรทัดละลิงก์) <textarea name="links" rows="2"></textarea></label>
         <label>รูปอ้างอิง <input name="images" type="file" accept="image/*" multiple></label>

@@ -30,11 +30,21 @@ $('#projectList').addEventListener('click', (e) => {
   if (li) openProject(li.dataset.id);
 });
 
+const typeSel = $('#newForm [name=type]');
+const syncProductFields = () => ($('#productFields').style.display = typeSel.value === 'product' ? '' : 'none');
+typeSel.addEventListener('change', syncProductFields);
+syncProductFields();
+
 $('#newForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const f = new FormData(e.target);
+  const product = f.get('type') === 'product' ? {
+    name: f.get('p_name'), price: f.get('p_price'), pain: f.get('p_pain'),
+    benefits: f.get('p_benefits'), promo: f.get('p_promo'), cta: f.get('p_cta'),
+  } : undefined;
+  if (!f.get('topic') && !product?.name) return alert('กรุณาใส่หัวข้อ หรือชื่อสินค้า');
   const p = await api('POST', '/api/projects', {
-    type: f.get('type'), topic: f.get('topic'), details: f.get('details'),
+    type: f.get('type'), topic: f.get('topic'), details: f.get('details'), product,
     links: String(f.get('links')).split('\n').map((s) => s.trim()).filter(Boolean),
   });
   for (const file of e.target.images.files) {
@@ -81,6 +91,20 @@ function render() {
       </div>
     </div>
 
+    ${p.type === 'product' ? `<div class="card">
+      <h3>ข้อมูลสินค้า <small class="muted">(ราคา/โปร/ข้อความชวนซื้อ จะขึ้นเป็นป้ายบนฉากสุดท้าย)</small></h3>
+      <div class="grid2">
+        <label>ชื่อสินค้า <input data-p="name" value="${esc(p.product?.name)}"></label>
+        <label>ราคา <input data-p="price" value="${esc(p.product?.price)}"></label>
+        <label>ปัญหาที่ลูกค้าเจอ <input data-p="pain" value="${esc(p.product?.pain)}"></label>
+        <label>โปรโมชัน <input data-p="promo" value="${esc(p.product?.promo)}"></label>
+      </div>
+      <div class="grid2">
+        <label>จุดเด่น (บรรทัดละข้อ) <textarea data-p="benefits" rows="3">${esc((p.product?.benefits || []).join('\n'))}</textarea></label>
+        <label>ข้อความชวนซื้อ <input data-p="cta" value="${esc(p.product?.cta)}"></label>
+      </div>
+    </div>` : ''}
+
     <div class="card">
       <h3>2. บท</h3>
       <div class="grid2">
@@ -123,6 +147,7 @@ function render() {
           <select id="transition">${['fade', 'fadeblack', 'slideleft', 'slideup', 'circleopen', 'none'].map((t) => `<option ${p.settings.transition === t ? 'selected' : ''}>${t}</option>`).join('')}</select>
         </label>
         <label style="width:auto"><input type="checkbox" id="burnSubs" ${p.settings.burnSubtitles !== false ? 'checked' : ''} style="width:auto"> เผาซับ</label>
+        ${p.type === 'product' ? `<label style="width:auto"><input type="checkbox" id="priceOverlay" ${p.settings.priceOverlay !== false ? 'checked' : ''} style="width:auto"> ป้ายราคาฉากสุดท้าย</label>` : ''}
         <label style="width:auto"><input type="checkbox" id="titleOverlay" ${p.settings.titleOverlay !== false ? 'checked' : ''} style="width:auto"> ข้อความ Hook ต้นคลิป</label>
         <button id="renderBtn">🎞 รวมเป็น MP4 9:16</button>
         <span id="renderMsg" class="muted"></span>
@@ -189,9 +214,14 @@ function collect() {
       s[k] = el.type === 'checkbox' ? el.checked : k === 'duration' ? Number(el.value) : k === 'refImage' ? el.value || null : el.value;
     });
   });
+  if (p.type === 'product') {
+    p.product = p.product || {};
+    document.querySelectorAll('[data-p]').forEach((el) => (p.product[el.dataset.p] = el.value));
+  }
   p.settings.transition = $('#transition').value;
   p.settings.burnSubtitles = $('#burnSubs').checked;
   p.settings.titleOverlay = $('#titleOverlay').checked;
+  if ($('#priceOverlay')) p.settings.priceOverlay = $('#priceOverlay').checked;
 }
 
 async function save() {
