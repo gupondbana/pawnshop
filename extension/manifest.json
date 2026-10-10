@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "Clip Studio — Meta Runner",
+  "version": "0.1.0",
+  "description": "รับคิวฉากจาก Clip Studio ในเครื่อง แล้วสั่งสร้างวิดีโอบนหน้า Meta AI ที่ผู้ใช้ล็อกอินอยู่ (ไม่อ่าน/เก็บ Cookie หรือ Token)",
+  "permissions": ["storage", "alarms", "tabs", "scripting"],
+  "host_permissions": [
+    "http://127.0.0.1:4317/*",
+    "https://www.meta.ai/*",
+    "https://meta.ai/*"
+  ],
+  "optional_host_permissions": ["https://*/*"],
+  "background": { "service_worker": "background.js", "type": "module" },
+  "content_scripts": [
+    {
+      "matches": ["https://www.meta.ai/*", "https://meta.ai/*"],
+      "js": ["selectors.js", "content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": { "default_popup": "popup.html", "default_title": "Clip Studio Runner" },
+  "options_page": "options.html"
+}

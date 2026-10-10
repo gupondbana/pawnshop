@@ -1,0 +1,12 @@
+{
+  "name": "clip-studio",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Local Content Studio: เขียนบท, Storyboard, คิวงานให้ Chrome Extension และรวมคลิปด้วย FFmpeg",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test/smoke.js"
+  },
+  "engines": { "node": ">=20" }
+}

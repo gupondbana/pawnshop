@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Clip Studio</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header>
+    <h1>🎬 Clip Studio</h1>
+    <div id="queueBar" class="queue-bar"></div>
+  </header>
+  <main>
+    <aside>
+      <h2>โปรเจกต์ใหม่</h2>
+      <form id="newForm">
+        <label>ประเภท
+          <select name="type">
+            <option value="product">ขายสินค้า</option>
+            <option value="story">เล่าเรื่อง</option>
+            <option value="fable">นิทาน</option>
+            <option value="knowledge">ความรู้</option>
+            <option value="horror">เรื่องหลอน</option>
+            <option value="follower">เพิ่มผู้ติดตาม</option>
+          </select>
+        </label>
+        <label>หัวข้อ <input name="topic" required></label>
+        <label>รายละเอียด <textarea name="details" rows="3"></textarea></label>
+        <label>ลิงก์ (บรรทัดละลิงก์) <textarea name="links" rows="2"></textarea></label>
+        <label>รูปอ้างอิง <input name="images" type="file" accept="image/*" multiple></label>
+        <button>สร้างโปรเจกต์</button>
+      </form>
+      <h2>โปรเจกต์ทั้งหมด</h2>
+      <ul id="projectList"></ul>
+    </aside>
+    <section id="editor"><p class="muted">เลือกหรือสร้างโปรเจกต์</p></section>
+  </main>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

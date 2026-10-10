@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <title>Clip Studio Runner — ตั้งค่า</title>
+  <style>
+    body { font: 14px system-ui, "Noto Sans Thai", sans-serif; max-width: 760px; margin: 20px auto; padding: 0 16px; }
+    textarea { width: 100%; font: 12px monospace; }
+    button { padding: 6px 14px; }
+  </style>
+</head>
+<body>
+  <h2>ตั้งค่า Runner</h2>
+  <p>แก้ JSON ได้โดยตรง — <b>selectors</b> ควรมาจากโหมดเลือกบนหน้าจริงเท่านั้น,
+    <b>quotaTexts</b> ให้คัดลอกข้อความจริงที่ Meta แสดงตอนโควตาหมด (เช่นประโยคเต็มที่เห็น),
+    <b>promptSuffix</b> ใช้ต่อท้ายทุก Prompt เช่นคำขอให้มีเสียงพูด/เพลง</p>
+  <textarea id="json" rows="28"></textarea>
+  <p><button id="save">บันทึก</button> <span id="msg"></span></p>
+  <script src="options.js"></script>
+</body>
+</html>

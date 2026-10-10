@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { width: 360px; font: 13px system-ui, "Noto Sans Thai", sans-serif; margin: 10px; color: #222; }
+    h3 { margin: 10px 0 6px; font-size: 13px; }
+    #status { background: #f3f5f9; border-radius: 6px; padding: 8px; min-height: 34px; white-space: pre-wrap; }
+    button { border: 0; border-radius: 5px; padding: 5px 10px; cursor: pointer; background: #4f8cff; color: #fff; }
+    button.stop { background: #ef5350; } button.ghost { background: #e8ebf2; color: #222; }
+    .row { display: flex; gap: 6px; align-items: center; margin: 4px 0; }
+    .sel { flex: 1; font-family: monospace; font-size: 11px; color: #555; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .req { color: #ef5350; } .count { font-size: 11px; min-width: 28px; text-align: right; }
+    small { color: #777; }
+  </style>
+</head>
+<body>
+  <div class="row"><strong>🎬 Clip Studio Runner</strong></div>
+  <div id="status">…</div>
+  <div class="row" style="margin-top:8px">
+    <button id="start">▶ เริ่มทำคิว</button>
+    <button id="stop" class="stop">⏹ หยุด</button>
+    <button id="studio" class="ghost">เปิด Studio</button>
+  </div>
+
+  <h3>ตั้งค่า Selector จากหน้าจริง</h3>
+  <small>เปิดหน้า Meta AI → กด “เลือก” แล้วคลิกองค์ประกอบจริงบนหน้า (ห้ามเดา)</small>
+  <div id="roles"></div>
+  <div class="row">
+    <button id="test" class="ghost">ทดสอบ Selector</button>
+    <button id="scan" class="ghost">สแกนโครงสร้างหน้า → Studio</button>
+  </div>
+  <div class="row">
+    <button id="perm" class="ghost">อนุญาตดาวน์โหลดวิดีโอจาก CDN</button>
+    <button id="opts" class="ghost">ตั้งค่าเพิ่ม</button>
+  </div>
+  <script src="selectors.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
