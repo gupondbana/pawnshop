@@ -132,7 +132,7 @@
     }
 
     status('ใส่ Prompt');
-    const fullPrompt = [cfg.promptPrefix, job.prompt, cfg.promptSuffix].filter(Boolean).join('\n');
+    const fullPrompt = [cfg.promptPrefix, job.prompt, cfg.promptSuffix].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
     setPrompt(input, fullPrompt);
     await sleep(600);
     if (!promptText(input)) throw new Error('ใส่ Prompt ไม่ติด — ตรวจ Selector ช่อง Prompt');

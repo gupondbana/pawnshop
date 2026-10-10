@@ -25,7 +25,7 @@ const SCHEMA = `{
     "characterIds": string[],
     "dialogue": string (บทพูด/บรรยายภาษาไทย สั้นพอพูดจบในฉาก),
     "subtitle": string (ซับไทย),
-    "prompt": string (Prompt ภาษาอังกฤษสำหรับสร้างวิดีโอแนวตั้ง 9:16 ใส่ look ของตัวละครเต็มๆ, กล้อง, แสง, การเคลื่อนไหว และระบุบทพูดไทยในเครื่องหมายคำพูดพร้อมบอกว่าใครพูด),
+    "prompt": string (ภาษาไทยประโยคเดียว ไม่เกิน 40 คำ บรรยายภาพที่จะเห็นในฉาก: ใคร(พร้อมรูปลักษณ์สั้นๆ ให้เหมือนกันทุกฉาก) ทำอะไร ที่ไหน และถ้ามีบทพูดให้ใส่ว่า พูดว่า "..." ห้ามขึ้นต้นด้วยคำว่าสร้างวิดีโอ ห้ามมีหัวข้อหรือขึ้นบรรทัดใหม่),
     "useRefImage": boolean
   }]
 }`;
@@ -87,7 +87,7 @@ function offlineDraft(project, n) {
       characterIds: ['c1'],
       dialogue: i === 0 ? `รู้ไหม ${t} มีเรื่องที่คนส่วนใหญ่ไม่รู้` : i === n - 1 ? 'ถ้าชอบ กดติดตามไว้นะ' : `ประเด็นที่ ${i} ของ ${t}`,
       subtitle: '',
-      prompt: `Vertical 9:16 cinematic video about "${t}", ${part}. A friendly Thai presenter speaks to camera in Thai.`,
+      prompt: i === 0 ? `${t} ภาพเปิดเรื่องสะดุดตา` : i === n - 1 ? `${t} ฉากจบอบอุ่น` : `${t} ฉากที่ ${i + 1}`,
       useRefImage: i === 0 && project.input.images.length > 0,
     };
   });
