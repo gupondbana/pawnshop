@@ -3,17 +3,19 @@
 const STUDIO = 'http://127.0.0.1:4317';
 const DEFAULT_CFG = {
   metaUrl: 'https://www.meta.ai/',
-  // ยืนยันจากการสแกนหน้าจริง meta.ai (snapshot 2026-10-10) — ยังขาด videoResult และวิธีเลือกโหมดวิดีโอ
+  // ยืนยันจากการสแกนหน้าจริง meta.ai (snapshot 2026-10-10)
   selectors: {
     newChat: 'a[data-testid="new-chat-button"]',
     promptInput: 'div[data-testid="composer-input"]',
     submitButton: 'button[data-testid="composer-send-button"]',
     uploadInput: 'input[type="file"]',
     modeButton: 'button[data-testid="composer-mode-dropdown-button"]',
+    // สแกนตอนมีวิดีโอแล้ว: วิดีโออยู่ในข้อความตอบกลับของ Meta AI
+    videoResult: 'div[data-testid="assistant-message"] video',
   },
-  videoModeText: '', // ข้อความเมนูโหมดวิดีโอ ต้องได้จากการสแกนตอนเปิดเมนูโหมด
+  videoModeText: '', // เมนูโหมดจริงมีแค่ "รูปอินสแตนท์"/"กำลังคิด" ไม่ต้องสลับโหมด
   quotaTexts: [],
-  promptPrefix: '',
+  promptPrefix: 'สร้างวิดีโอแนวตั้ง 9:16 พร้อมเสียง ตามรายละเอียดนี้:', // ทดสอบจริงแล้ว: พิมพ์ "สร้างวิดีโอ..." ในแชตได้วิดีโอ
   promptSuffix: '',
   uploadWaitMs: 4000,
   jobTimeoutMin: 10,
