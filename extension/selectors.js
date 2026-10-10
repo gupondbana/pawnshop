@@ -7,6 +7,7 @@ globalThis.CLIP_SELECTOR_ROLES = {
   uploadInput:  { required: false, label: 'input[type=file] สำหรับแนบรูป (หรือปุ่มแนบรูป)' },
   submitButton: { required: true,  label: 'ปุ่มส่ง/สร้าง' },
   videoResult:  { required: true,  label: 'วิดีโอผลลัพธ์ (<video>)' },
+  modeButton:   { required: false, label: 'ปุ่มเลือกโหมด (รูป/วิดีโอ)' },
   busyIndicator:{ required: false, label: 'สัญลักษณ์กำลังสร้าง (ถ้ามี)' },
 };
 

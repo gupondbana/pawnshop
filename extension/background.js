@@ -3,7 +3,15 @@
 const STUDIO = 'http://127.0.0.1:4317';
 const DEFAULT_CFG = {
   metaUrl: 'https://www.meta.ai/',
-  selectors: {},
+  // ยืนยันจากการสแกนหน้าจริง meta.ai (snapshot 2026-10-10) — ยังขาด videoResult และวิธีเลือกโหมดวิดีโอ
+  selectors: {
+    newChat: 'a[data-testid="new-chat-button"]',
+    promptInput: 'div[data-testid="composer-input"]',
+    submitButton: 'button[data-testid="composer-send-button"]',
+    uploadInput: 'input[type="file"]',
+    modeButton: 'button[data-testid="composer-mode-dropdown-button"]',
+  },
+  videoModeText: '', // ข้อความเมนูโหมดวิดีโอ ต้องได้จากการสแกนตอนเปิดเมนูโหมด
   quotaTexts: [],
   promptPrefix: '',
   promptSuffix: '',
@@ -14,7 +22,7 @@ const DEFAULT_CFG = {
 
 async function cfg() {
   const { config } = await chrome.storage.local.get('config');
-  return { ...DEFAULT_CFG, ...config, selectors: { ...(config?.selectors || {}) } };
+  return { ...DEFAULT_CFG, ...config, selectors: { ...DEFAULT_CFG.selectors, ...(config?.selectors || {}) } };
 }
 async function saveCfg(patch) {
   const c = await cfg();

@@ -77,7 +77,13 @@
     const dt = new DataTransfer();
     dt.items.add(file);
 
-    const target = q(cfg.selectors.uploadInput);
+    const inputs = qa(cfg.selectors.uploadInput);
+    const composer = q(cfg.selectors.promptInput);
+    let target = inputs[0];
+    for (let a = composer?.parentElement; a && inputs.length > 1; a = a.parentElement) {
+      const hit = inputs.find((i) => a.contains(i));
+      if (hit) { target = hit; break; }
+    }
     if (target?.matches('input[type=file]')) {
       target.files = dt.files;
       target.dispatchEvent(new Event('input', { bubbles: true }));
@@ -102,6 +108,14 @@
     if (job.refImageUrl && !S.uploadInput) throw new Error('ฉากนี้มีรูปอ้างอิง แต่ยังไม่ได้ตั้ง Selector แนบรูป');
 
     status(`เริ่ม ${job.title}`);
+    if (S.modeButton && cfg.videoModeText && q(S.modeButton) && !q(S.modeButton).innerText.includes(cfg.videoModeText)) {
+      status('เลือกโหมดวิดีโอ');
+      q(S.modeButton).click();
+      const item = await waitFor(() => [...document.querySelectorAll('[role=menuitem],[role=menuitemradio],[role=option],[role=radio],button')]
+        .find((el) => visible(el) && el !== q(S.modeButton) && el.innerText.trim().includes(cfg.videoModeText)), 5000, 'เมนูโหมดวิดีโอ');
+      item.click();
+      await sleep(800);
+    }
     if (S.newChat && q(S.newChat)) {
       q(S.newChat).click();
       await sleep(1500);
@@ -174,7 +188,7 @@
 
   // ---------- สแกนโครงสร้างหน้าจริง (เพื่อตรวจ ไม่ใช่เดา) ----------
   function scanDom() {
-    const sel = 'button,[role=button],textarea,input,[contenteditable="true"],[role=textbox],video,[aria-label],[data-testid]';
+    const sel = 'button,[role=button],[role=menuitem],[role=menuitemradio],[role=option],[role=radio],[role=tab],textarea,input,[contenteditable="true"],[role=textbox],video,[aria-label],[data-testid]';
     const items = [...document.querySelectorAll(sel)].filter(visible).slice(0, 400).map((el) => ({
       tag: el.tagName.toLowerCase(),
       type: el.getAttribute('type'),
