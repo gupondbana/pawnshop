@@ -210,10 +210,11 @@ function bindEditor() {
 
   $('#gen').onclick = async () => {
     if (current.scenes.some((s) => s.video) && !confirm('การสร้างบทใหม่จะแทนที่ฉากเดิมทั้งหมด ดำเนินการต่อ?')) return;
+    const sceneCount = Number($('#sceneCount').value); // อ่านก่อน save() เพราะ save() วาดหน้าใหม่และรีเซ็ตช่องนี้
     await save();
     $('#genMsg').textContent = 'AI กำลังเขียนบท...';
     try {
-      current = await api('POST', `/api/projects/${current.id}/generate`, { sceneCount: Number($('#sceneCount').value) });
+      current = await api('POST', `/api/projects/${current.id}/generate`, { sceneCount });
       render();
       loadList();
     } catch (e) { $('#genMsg').textContent = '❌ ' + e.message; }
